@@ -1,5 +1,3 @@
-.. _extension-dev:
-
 Flask Extension Development
 ===========================
 
@@ -29,9 +27,10 @@ their :file:`setup.py` files.
 But what do extensions look like themselves?  An extension has to ensure
 that it works with multiple Flask application instances at once.  This is
 a requirement because many people will use patterns like the
-:ref:`app-factories` pattern to create their application as needed to aid
-unittests and to support multiple configurations.  Because of that it is
-crucial that your application supports that kind of behavior.
+:doc:`/patterns/appfactories` pattern to create their application as
+needed to aid unittests and to support multiple configurations. Because
+of that it is crucial that your application supports that kind of
+behavior.
 
 Most importantly the extension must be shipped with a :file:`setup.py` file and
 registered on PyPI.  Also the development checkout link should work so
@@ -119,8 +118,8 @@ Initializing Extensions
 
 Many extensions will need some kind of initialization step.  For example,
 consider an application that's currently connecting to SQLite like the
-documentation suggests (:ref:`sqlite3`).  So how does the extension
-know the name of the application object?
+documentation suggests (:doc:`/patterns/sqlite3`). So how does the
+extension know the name of the application object?
 
 Quite simple: you pass it to it.
 
@@ -276,7 +275,7 @@ Learn from Others
 This documentation only touches the bare minimum for extension development.
 If you want to learn more, it's a very good idea to check out existing extensions
 on the `PyPI`_.  If you feel lost there is still the `mailinglist`_ and the
-`IRC channel`_ to get some ideas for nice looking APIs.  Especially if you do
+`Discord server`_ to get some ideas for nice looking APIs.  Especially if you do
 something nobody before you did, it might be a very good idea to get some more
 input.  This not only generates useful feedback on what people might want from
 an extension, but also avoids having multiple developers working in isolation
@@ -292,50 +291,46 @@ API.  And this can only work if collaboration happens early.
 Approved Extensions
 -------------------
 
-Flask also has the concept of approved extensions.  Approved extensions
-are tested as part of Flask itself to ensure extensions do not break on
-new releases.  If you want your own extension to be approved you have to
-follow these guidelines:
+Flask previously had the concept of approved extensions. These came with
+some vetting of support and compatibility. While this list became too
+difficult to maintain over time, the guidelines are still relevant to
+all extensions maintained and developed today, as they help the Flask
+ecosystem remain consistent and compatible.
 
 0.  An approved Flask extension requires a maintainer. In the event an
-    extension author would like to move beyond the project, the project should
-    find a new maintainer including full source hosting transition and PyPI
-    access.  If no maintainer is available, give access to the Flask core team.
-1.  An approved Flask extension must provide exactly one package or module
-    named ``flask_extensionname``.
-2.  It must ship a testing suite that can either be invoked with ``make test``
-    or ``python setup.py test``.  For test suites invoked with ``make
-    test`` the extension has to ensure that all dependencies for the test
-    are installed automatically.  If tests are invoked with ``python setup.py
-    test``, test dependencies can be specified in the :file:`setup.py` file.
-    The test suite also has to be part of the distribution.
-3.  APIs of approved extensions will be checked for the following
-    characteristics:
+    extension author would like to move beyond the project, the project
+    should find a new maintainer and transfer access to the repository,
+    documentation, PyPI, and any other services. If no maintainer
+    is available, give access to the Pallets core team.
+1.  The naming scheme is *Flask-ExtensionName* or *ExtensionName-Flask*.
+    It must provide exactly one package or module named
+    ``flask_extension_name``.
+2.  The extension must be BSD or MIT licensed. It must be open source
+    and publicly available.
+3.  The extension's API must have the following characteristics:
 
-   -   an approved extension has to support multiple applications
-       running in the same Python process.
-   -   it must be possible to use the factory pattern for creating
-       applications.
+    -   It must support multiple applications running in the same Python
+        process. Use ``current_app`` instead of ``self.app``, store
+        configuration and state per application instance.
+    -   It must be possible to use the factory pattern for creating
+        applications. Use the ``ext.init_app()`` pattern.
 
-4.  The license must be BSD/MIT/WTFPL licensed.
-5.  The naming scheme for official extensions is *Flask-ExtensionName* or
-    *ExtensionName-Flask*.
-6.  Approved extensions must define all their dependencies in the
-    :file:`setup.py` file unless a dependency cannot be met because it is not
-    available on PyPI.
-7.  The documentation must use the ``flask`` theme from the
-    `Official Pallets Themes`_.
-8.  The setup.py description (and thus the PyPI description) has to
-    link to the documentation, website (if there is one) and there
-    must be a link to automatically install the development version
-    (``PackageName==dev``).
-9. The ``zip_safe`` flag in the setup script must be set to ``False``,
-   even if the extension would be safe for zipping.
-10. An extension currently has to support Python 3.4 and newer and 2.7.
-
+4.  From a clone of the repository, an extension with its dependencies
+    must be installable with ``pip install -e .``.
+5.  It must ship a testing suite that can be invoked with ``tox -e py``
+    or ``pytest``. If not using ``tox``, the test dependencies should be
+    specified in a ``requirements.txt`` file. The tests must be part of
+    the sdist distribution.
+6.  The documentation must use the ``flask`` theme from the
+    `Official Pallets Themes`_. A link to the documentation or project
+    website must be in the PyPI metadata or the readme.
+7.  For maximum compatibility, the extension should support the same
+    versions of Python that Flask supports. 3.6+ is recommended as of
+    2020. Use ``python_requires=">= 3.6"`` in ``setup.py`` to indicate
+    supported versions.
 
 .. _PyPI: https://pypi.org/search/?c=Framework+%3A%3A+Flask
 .. _OAuth extension: https://pythonhosted.org/Flask-OAuth/
-.. _mailinglist: http://flask.pocoo.org/mailinglist/
-.. _IRC channel: http://flask.pocoo.org/community/irc/
+.. _mailinglist: https://mail.python.org/mailman/listinfo/flask
+.. _Discord server: https://discord.gg/t6rrQZH
 .. _Official Pallets Themes: https://pypi.org/project/Pallets-Sphinx-Themes/

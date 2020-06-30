@@ -58,7 +58,7 @@ loaded upfront.  The trick is to actually load the view function as needed.
 This can be accomplished with a helper class that behaves just like a
 function but internally imports the real function on first use::
 
-    from werkzeug import import_string, cached_property
+    from werkzeug.utils import import_string, cached_property
 
     class LazyView(object):
 
@@ -93,7 +93,7 @@ write this by having a function that calls into
 name and a dot, and by wrapping `view_func` in a `LazyView` as needed.  ::
 
     def url(import_name, url_rules=[], **options):
-        view = LazyView('yourapplication.' + import_name)
+        view = LazyView(f"yourapplication.{import_name}")
         for url_rule in url_rules:
             app.add_url_rule(url_rule, view_func=view, **options)
 
